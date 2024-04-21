@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/scrollreveal.js/3.3.1/scrollreveal.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+
+<body>
+
+
+<header>
+  <div class="container text-center">
+    <h1>Science Of Happiness Timeline</h1>
+    <p style="font-size: 2em; padding-top: 2em;">Thaison Le, Matthew Gong, Tanya Sun, Ale Granda</p>  
+    <p style="font-size: 2em; padding-top: 2em;">Create your own Timeline</p>
+  </div>
+</header>
+
+<div class="timeline_container">
+    
+</div>
+
+<div class="circular-btn-container">
+    <button class="circular-btn" id="add-timeline-item">+</button>
+</div>
+
+</body>
+
+<script src="script.js"></script>
+<script>
+    $(document).ready(function() {
+        let time_line_items = 0;
+
+        $('#add-timeline-item').click(function() {
+            if(time_line_items == 0){
+                const newSection = $('<section class="timeline"></section>');
+                $('.timeline_container').append(newSection);
+                const container = $('<div class="timeline_item_container"></div>');
+                $('.timeline').append(container);
+            }
+            let animation = 'create_fade_in_left';
+            if (time_line_items % 2 == 1) {
+                animation = 'create_fade_in_right';
+            }
+
+            const newItem = $(`<div class="timeline-item ${animation}">
+                                <div class="timeline-img"></div>
+                                <div class="timeline-content js--fadeInLeft">
+                                    <h2>Waking Up</h2>
+                                    <div class="date">8:00 - 9:00 AM</div>
+                                    <p>[Insert video here] Slides: Meditation slides, mood eating and mood slides</p>
+                                    <p>When you are waking up in the morning, here are some things that can make a good start to your day</p>
+                                </div>
+                            </div>`);
+            $('.timeline_item_container').append(newItem);
+            time_line_items++;
+            newItem[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        });
+    });
+
+</script>
+<!-- <section class="timeline">
+
+</section>
+
+
+<div class="circular-btn-container">
+    <button class="circular-btn">+</button>
+</div>
+
+<script src="script.js"></script>
+ -->
+
+</html>
