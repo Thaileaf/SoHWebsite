@@ -24,16 +24,96 @@
 </div>
 
 <div class="circular-btn-container">
-    <button class="circular-btn" id="add-timeline-item">+</button>
+    <div class="box-above-btn" style="display: none;">
+            <h2>Add A New Timeline Item</h2>
+            <input type="text" id="add-timeline-title" placeholder="Title"/>
+            <input type="time" id="add-timeline-date" value="06:00"/>
+            <input type="File" id="add-timeline-file" accept="image/*" />
+            <textarea id="add-timeline-text" placeholder="Description"></textarea>
+            <button id="add-timeline-item">Add</button>
+            <!-- <button class="circular-btn" id="add-timeline-item">+</button> -->
+            
+            <div class="triangle-down"></div>
+            
+    </div>
+    <button class="circular-btn" id="show-timeline-item">+</button>
 </div>
+
+
 
 </body>
 
 <script src="script.js"></script>
 <script>
+
     $(document).ready(function() {
         let time_line_items = 0;
+        let time_line_components = []; 
+        $('#show-timeline-item').click(function() {
+            if($('.box-above-btn').is(':hidden')){
+                $('.box-above-btn').show();
+            }else{
+                $('.box-above-btn').hide();
+            }
+        });
+        const create_timeline = function(){ 
+            if ($('section.timeline').length) {
+                $('section.timeline').remove();
+            }
+            //sort timeline_items by time 
+            time_line_components = time_line_components.sort((a, b) => {
+                a_parts = a.date.split(':');
+                b_parts = b.date.split(':');
+                a_time = new Date();
+                b_time = new Date();
+                a_time.setHours(parseInt(a_parts[0]));
+                a_time.setMinutes(parseInt(a_parts[1]));
+                b_time.setHours(parseInt(b_parts[0]));
+                b_time.setMinutes(parseInt(b_parts[1]));
+                return a_time - b_time;
+            });
+            console.log(time_line_components);
 
+            const newSection = $('<section class="timeline"></section>');
+            $('.timeline_container').append(newSection);
+            const container = $('<div class="timeline_item_container"></div>');
+            $('.timeline').append(container);
+            for (let i = 0; i < time_line_components.length; i++) {
+                console.log(time_line_components[i]);
+                let animation = 'create_fade_in_left';
+                if(i % 2 == 1){
+                    const animation = 'create_fade_in_right';
+                }
+                const {title, date, file, text} = time_line_components[i];
+                let newItem = null;
+                if(file != ''){
+                    newItem = $(`    <div class="timeline-item">
+                                        <div class="timeline-img"></div>
+                                        <div class="timeline-content timeline-card ${animation}">
+                                        <div class="timeline-img-header">
+                                            <h2>Break with your Character Strengths</h2>
+                                        </div>
+                                        <div class="date">${date}</div>
+                                        <p>${text}</p>
+                                        </div>
+                                    </div>`);
+                            newItem.find(`.timeline-img-header`).css({
+                                'background': `linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, .4)), url('${file}') center center no-repeat`,
+                        });
+                }else{
+                    newItem = $(`<div class="timeline-item ${animation}">
+                                <div class="timeline-img"></div>
+                                <div class="timeline-content js--fadeInLeft">
+                                    <h2>${title}</h2>
+                                    <div class="date">${date}</div>
+                                    <p>${text}</p>
+                                </div>
+                            </div>`);
+                }
+                $('.timeline_item_container').append(newItem);
+                newItem[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
         $('#add-timeline-item').click(function() {
             if(time_line_items == 0){
                 const newSection = $('<section class="timeline"></section>');
@@ -41,23 +121,34 @@
                 const container = $('<div class="timeline_item_container"></div>');
                 $('.timeline').append(container);
             }
-            let animation = 'create_fade_in_left';
-            if (time_line_items % 2 == 1) {
-                animation = 'create_fade_in_right';
-            }
+            // let animation = 'create_fade_in_left';
+            // if (time_line_items % 2 == 1) {
+            //     animation = 'create_fade_in_right';
+            // }
+            let title = $('#add-timeline-title').val();
+            let date = $('#add-timeline-date').val();
+            let text = $('#add-timeline-text').val();
 
-            const newItem = $(`<div class="timeline-item ${animation}">
-                                <div class="timeline-img"></div>
-                                <div class="timeline-content js--fadeInLeft">
-                                    <h2>Waking Up</h2>
-                                    <div class="date">8:00 - 9:00 AM</div>
-                                    <p>[Insert video here] Slides: Meditation slides, mood eating and mood slides</p>
-                                    <p>When you are waking up in the morning, here are some things that can make a good start to your day</p>
-                                </div>
-                            </div>`);
-            $('.timeline_item_container').append(newItem);
-            time_line_items++;
-            newItem[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            let fileInput = $('#add-timeline-file')[0];
+
+
+            if (fileInput.files.length > 0) {
+                let file = fileInput.files[0];
+
+                // Read the file as a data URL
+                let reader = new FileReader();
+                reader.onload = function(event) {
+                    let imageUrl = event.target.result; // Get the data URL of the image
+                    time_line_components.push({title, date, file: imageUrl, text});
+                    create_timeline();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                // If no file is selected, push an empty string to the time_line_components array
+                time_line_components.push({title, date, file: '', text});
+                create_timeline();
+            }
+                
 
         });
     });
